@@ -46,7 +46,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<bool> ProductExistsAsync(string name)
     {
-        return await _db.Products.AnyAsync(product => product.Name.ToLower() == name.ToLower());
+        return await _db.Products.AnyAsync(product => product.Name.ToLower().Trim() == name.ToLower().Trim());
     }
 
     public async Task<bool> CreateProductAsync(Product product)

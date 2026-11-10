@@ -23,14 +23,15 @@ namespace ApiEcommerce.Controllers
         public async Task<ActionResult> GetProductByIdAsync(int id)
         {
             var product = await _services.GetProductByIdAsync(id);
-            return Ok(product);
+            return Ok(_mapper.Map<ProductDTO>(product));
         }
 
         [HttpGet(Name = "GetProducts")]
         public async Task<ActionResult> GetProductsAsync([FromQuery] PaginationParams paginationParams)
         {
             var products = await _services.GetProductsAsync(paginationParams.Page, paginationParams.PageSize);
-            return Ok(products);
+            var result = _mapper.Map<List<ProductDTO>>(products);
+            return Ok(result);
         }
 
         [HttpPost(Name = "CreateProduct")]
