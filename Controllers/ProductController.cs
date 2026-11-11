@@ -72,7 +72,7 @@ namespace ApiEcommerce.Controllers
             });
         }
 
-        [HttpGet("{categoryId:int}", Name = "GetProductsForCategory")]
+        [HttpGet("searchByCategory/{categoryId:int}", Name = "GetProductsForCategory")]
         public async Task<ActionResult> GetProductsForCategoryAsync(int categoryId)
         {
             var saved = await _services.GetProductsForCategoryAsync(categoryId);
