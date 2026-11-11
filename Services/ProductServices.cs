@@ -1,21 +1,25 @@
 using System;
 using System.Drawing;
 using ApiEcommerce.Models;
+using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
 
 namespace ApiEcommerce.Services;
 
 public class ProductServices : IProductServices
 {
-    private readonly IProductRepository _category;
-    public ProductServices(IProductRepository productRepository)
+    private readonly IProductRepository _product;
+    private readonly ICategoryRepository _category;
+
+    public ProductServices(IProductRepository productRepository, ICategoryRepository categoryRepository)
     {
-        _category = productRepository;
+        _product = productRepository;
+        _category = categoryRepository;
     }
 
     public async Task<List<Product>> GetProductsAsync(int page, int pageSize)
     {
-        return await _category.GetProductsAsync(page, pageSize);
+        return await _product.GetProductsAsync(page, pageSize);
     }
 
     public async Task<ServiceResult<Product>> CreateProductAsync(Product product)
@@ -38,7 +42,7 @@ public class ProductServices : IProductServices
             };
         }
 
-        if (await _category.ProductExistsAsync(product.Name))
+        if (await _product.ProductExistsAsync(product.Name))
         {
             return new ServiceResult<Product>
             {
@@ -47,13 +51,22 @@ public class ProductServices : IProductServices
             };
         }
 
-        var productCreated = await _category.CreateProductAsync(product);
+        if (!await _category.CategoryExistsAsync(product.CategoryId))
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = $"Error: la categoria {product.CategoryId} no existe."
+            };
+        }
+
+        var productCreated = await _product.CreateProductAsync(product);
         if (!productCreated)
         {
             return new ServiceResult<Product>
             {
                 Success = false,
-                Message = "Error: El producto no se pudo crear"
+                Message = $"Error: Algo salio mal al guardar el registro {product.Name}"
             };
         }
 
@@ -62,17 +75,17 @@ public class ProductServices : IProductServices
 
     public async Task<Product?> GetProductByIdAsync(int id)
     {
-        return await _category.GetProductByIdAsync(id);
+        return await _product.GetProductByIdAsync(id);
     }
 
     public async Task<bool> ProductExistsAsync(int id)
     {
-        return await _category.ProductExistsAsync(id);
+        return await _product.ProductExistsAsync(id);
     }
 
     public async Task<bool> ProductExistsAsync(string name)
     {
-        return await _category.ProductExistsAsync(name);
+        return await _product.ProductExistsAsync(name);
     }
 
     public Task<List<Product>> SearchProductAsync(string name)
@@ -100,7 +113,7 @@ public class ProductServices : IProductServices
             };
         }
 
-        var product = await _category.GetProductAsync(name);
+        var product = await _product.GetProductAsync(name);
 
         if (product is null)
         {
@@ -112,7 +125,7 @@ public class ProductServices : IProductServices
         }
 
         product.Stock -= quantity;
-        var updateProduct = await _category.UpdateProductAsync(product);
+        var updateProduct = await _product.UpdateProductAsync(product);
         if (!updateProduct)
         {
             return new ServiceResult<Product>
@@ -128,5 +141,26 @@ public class ProductServices : IProductServices
             Message = "Producto comprado exitosamente",
             Data = product
         };  
+    }
+
+
+    public async Task<ServiceResult<List<Product>>> GetProductsForCategoryAsync(int categoryId)
+    {
+        if (!await _category.CategoryExistsAsync(categoryId))
+        {
+           return new ServiceResult<List<Product>>
+            {
+                Success = false,
+                Message = $"Error: La categoria {categoryId} no existe"
+            };   
+        }
+
+        var products = await _product.GetProductsForCategoryAsync(categoryId);
+
+        return new ServiceResult<List<Product>>
+        {
+            Success = true,
+            Data = products
+        }; ;
     }
 }

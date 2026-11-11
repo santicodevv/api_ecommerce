@@ -16,27 +16,27 @@ public class ProductRepository : IProductRepository
     {
         var result = await _db.Products.OrderBy(product => product.Id).Skip( (page - 1 ) * pageSize ).Take(pageSize).ToListAsync();
          
-        return await _db.Products.OrderBy(product => product.Id).ToListAsync();
+        return await _db.Products.Include(product => product.Category).OrderBy(product => product.Id).ToListAsync();
     }
 
     public async Task<List<Product>> GetProductsForCategoryAsync(int categoryId)
     {
-        return await _db.Products.Where(product => product.CategoryId == categoryId).ToListAsync();
+        return await _db.Products.Include(product => product.Category).Where(product => product.CategoryId == categoryId).ToListAsync();
     }
 
     public async Task<List<Product>> SearchProductAsync(string name)
     {
-        return await _db.Products.Where(product => product.Name.ToLower() == name.ToLower()).ToListAsync();
+        return await _db.Products.Include(product => product.Category).Where(product => product.Name.ToLower() == name.ToLower()).ToListAsync();
     }
 
     public async Task<Product?> GetProductByIdAsync(int id)
     {
-        return await _db.Products.FirstOrDefaultAsync(product => product.Id == id);
+        return await _db.Products.Include(product => product.Category).FirstOrDefaultAsync(product => product.Id == id);
     }
 
     public async Task<Product?> GetProductAsync(string name)
     {
-        return await _db.Products.FirstOrDefaultAsync(product => product.Name.ToLower().Trim() == name.ToLower().Trim());
+        return await _db.Products.Include(product => product.Category).FirstOrDefaultAsync(product => product.Name.ToLower().Trim() == name.ToLower().Trim());
     }
 
     public async Task<bool> ProductExistsAsync(int id)

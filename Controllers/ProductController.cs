@@ -71,5 +71,24 @@ namespace ApiEcommerce.Controllers
                 Data = _mapper.Map<ProductDTO>(saved.Data)
             });
         }
+
+        [HttpGet("{categoryId:int}", Name = "GetProductsForCategory")]
+        public async Task<ActionResult> GetProductsForCategoryAsync(int categoryId)
+        {
+            var saved = await _services.GetProductsForCategoryAsync(categoryId);
+
+            if (!saved.Success)
+            {
+                return BadRequest(new 
+                { 
+                    Message = saved.Message 
+                });
+            }
+
+            return Ok(new
+            { 
+                Data = _mapper.Map<List<ProductDTO>>(saved.Data)
+            });
+        }
     }
 }
