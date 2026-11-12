@@ -90,5 +90,24 @@ namespace ApiEcommerce.Controllers
                 Data = _mapper.Map<List<ProductDTO>>(saved.Data)
             });
         }
+
+        [HttpGet("searchByNameDescription/{searchTerm}", Name = "GetProductsForNameDescription")]
+        public async Task<ActionResult> GetProductsForNameDescriptionAsync(string searchTerm)
+        {
+            var saved = await _services.GetProductsForNameDescriptionAsync(searchTerm);
+
+            if (!saved.Success)
+            {
+                return BadRequest(new 
+                { 
+                    Message = saved.Message 
+                });
+            }
+
+            return Ok(new
+            { 
+                Data = _mapper.Map<List<ProductDTO>>(saved.Data)
+            });
+        }
     }
 }

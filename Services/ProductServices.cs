@@ -143,7 +143,6 @@ public class ProductServices : IProductServices
         };  
     }
 
-
     public async Task<ServiceResult<List<Product>>> GetProductsForCategoryAsync(int categoryId)
     {
         if (!await _category.CategoryExistsAsync(categoryId))
@@ -156,6 +155,34 @@ public class ProductServices : IProductServices
         }
 
         var products = await _product.GetProductsForCategoryAsync(categoryId);
+
+        return new ServiceResult<List<Product>>
+        {
+            Success = true,
+            Data = products
+        }; ;
+    }
+
+    public async Task<ServiceResult<List<Product>>> GetProductsForNameDescriptionAsync(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+           return new ServiceResult<List<Product>>
+            {
+                Success = false,
+                Message = $"Error: debes ingresar un nombre valido"
+            };   
+        }
+
+        var products = await _product.SearchProductAsync(name);
+        if (products.Count == 0)
+        {
+           return new ServiceResult<List<Product>>
+            {
+                Success = false,
+                Message = $"Error: no existe ningun producto con el nombre o description '{name}'"
+            };   
+        }
 
         return new ServiceResult<List<Product>>
         {

@@ -6,7 +6,7 @@ public interface IProductRepository
 {
     Task<List<Product>> GetProductsAsync(int page, int pageSize);
     Task<List<Product>> GetProductsForCategoryAsync(int categoryId);
-    Task<List<Product>> SearchProductAsync(string name);
+    Task<List<Product>> SearchProductAsync(string searchTerm);
     Task<Product?> GetProductByIdAsync(int id);
     Task<Product?> GetProductAsync(string name);
     Task<bool> ProductExistsAsync(int id);

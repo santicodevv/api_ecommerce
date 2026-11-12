@@ -21,12 +21,18 @@ public class ProductRepository : IProductRepository
 
     public async Task<List<Product>> GetProductsForCategoryAsync(int categoryId)
     {
-        return await _db.Products.Include(product => product.Category).Where(product => product.CategoryId == categoryId).ToListAsync();
+        var result = await _db.Products.Include(product => product.Category).Where(product => product.CategoryId == categoryId).ToListAsync();
+
+        return result;
     }
 
-    public async Task<List<Product>> SearchProductAsync(string name)
+    public async Task<List<Product>> SearchProductAsync(string searchTerm)
     {
-        return await _db.Products.Include(product => product.Category).Where(product => product.Name.ToLower() == name.ToLower()).ToListAsync();
+        var searchTermLowered = searchTerm.ToLower().Trim();
+        var result = await _db.Products.Include(product => product.Category)
+                            .Where(product => product.Name.ToLower().Contains( searchTermLowered ) || product.Description.ToLower().Contains( searchTermLowered ))
+                            .ToListAsync();
+        return result; 
     }
 
     public async Task<Product?> GetProductByIdAsync(int id)

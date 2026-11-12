@@ -12,4 +12,5 @@ public interface IProductServices
     Task<List<Product>> SearchProductAsync(string name);
     Task<ServiceResult<Product>> BuyProductAsync(string name, int quantity);
     Task<ServiceResult<List<Product>>> GetProductsForCategoryAsync(int categoryId);
+    Task<ServiceResult<List<Product>>> GetProductsForNameDescriptionAsync(string name);
 }
