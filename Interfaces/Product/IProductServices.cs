@@ -5,6 +5,8 @@ namespace ApiEcommerce.Services;
 public interface IProductServices
 {
     Task<ServiceResult<Product>> CreateProductAsync(Product product);
+    Task<ServiceResult<Product>> UpdateProductAsync(int id, Product product);
+    Task<ServiceResult<Product>> DeleteProductAsync(int id);
     Task<Product?> GetProductByIdAsync(int id);
     Task<List<Product>> GetProductsAsync(int page, int pageSize);
     Task<bool> ProductExistsAsync(int id);

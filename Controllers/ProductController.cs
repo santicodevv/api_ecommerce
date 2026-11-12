@@ -52,7 +52,43 @@ namespace ApiEcommerce.Controllers
             return CreatedAtAction("GetProductById", new { Id = result.Id }, result);
         }
 
-        [HttpGet("buy")]
+        [HttpPut("{id}", Name = "UpdateProduct")]
+        public async Task<ActionResult<ProductDTO>> UpdateProductAsync(int id, ProductProductDTO updateProductDTO)
+        {
+            var updated = await _services.UpdateProductAsync(id, _mapper.Map<Product>(updateProductDTO));
+
+            if (!updated.Success)
+            {
+                return BadRequest(new
+                {
+                    Message = updated.Message
+                });
+            }
+
+            var result = _mapper.Map<ProductDTO>(updated.Data);
+            
+            return Ok( new { Message = updated.Message, data = updated.Data } );
+        }
+
+        [HttpDelete("{id:int}", Name = "DeleteProduct")]
+        public async Task<ActionResult<ProductDTO>> DeleteProductAsync(int id)
+        {
+            var deleted = await _services.DeleteProductAsync(id);
+
+            if (!deleted.Success)
+            {
+                return BadRequest(new
+                {
+                    Message = deleted.Message
+                });
+            }
+
+            // var result = _mapper.Map<ProductDTO>(deleted.Data);
+            
+            return Ok( new { message = deleted.Message, data = deleted.Data } );
+        }
+
+        [HttpPatch("buy")]
         public async Task<ActionResult> BuyProductAsync(string name, int quantity)
         {
             var saved = await _services.BuyProductAsync(name, quantity);

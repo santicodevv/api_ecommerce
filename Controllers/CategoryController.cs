@@ -99,7 +99,7 @@ namespace ApiEcommerce.Controllers
                 return StatusCode(500, $"Algo salio mal al eliminar el registro {category.Name}");
             }
 
-            return NoContent();
+            return Ok("Producto eliminado correctamente");
         }
     }
 }

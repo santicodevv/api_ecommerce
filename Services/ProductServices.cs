@@ -73,6 +73,85 @@ public class ProductServices : IProductServices
         return new ServiceResult<Product> { Success = true, Message = "Producto creado exitosamente", Data = product};
     }
 
+    public async Task<ServiceResult<Product>> UpdateProductAsync(int id, Product product)
+    {
+        if (product is null)
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = "Error: El producto no valido"
+            };
+        }
+
+        if (product.CategoryId == 0)
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = "Error: La categoria debe tener un id existente!"
+            };
+        }
+
+        if (!await _product.ProductExistsAsync(id))
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = $"Error: El producto ingresado no existe"
+            };
+        }
+
+        if (!await _category.CategoryExistsAsync(product.CategoryId))
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = $"Error: la categoria {product.CategoryId} no existe, ingrese una valida para la actulizacion."
+            };
+        }
+
+        product.Id = id;
+        var productCreated = await _product.UpdateProductAsync(product);
+        if (!productCreated)
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = $"Error: Algo salio mal al actulizar el registro {product.Name}"
+            };
+        }
+
+        return new ServiceResult<Product> { Success = true, Message = "Producto actualizado exitosamente", Data = product};
+    }
+
+    public async Task<ServiceResult<Product>> DeleteProductAsync(int id)
+    {
+
+        if (!await _product.ProductExistsAsync(id))
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = $"Error: El producto ingresado no existe"
+            };
+        }
+
+        var product = await _product.GetProductByIdAsync(id);
+        var productCreated = await _product.DeleteProductAsync(product!);
+
+        if (!productCreated)
+        {
+            return new ServiceResult<Product>
+            {
+                Success = false,
+                Message = $"Error: Algo salio mal al eliminar el registro {product!.Name}"
+            };
+        }
+
+        return new ServiceResult<Product> { Success = true, Message = "Producto eliminado exitosamente", Data = product};
+    }
+
     public async Task<Product?> GetProductByIdAsync(int id)
     {
         return await _product.GetProductByIdAsync(id);
@@ -138,7 +217,7 @@ public class ProductServices : IProductServices
         return new ServiceResult<Product>
         {
             Success = true,
-            Message = "Producto comprado exitosamente",
+            Message = quantity > 1 ? $"Se compro {quantity} unidades del producto {name}" : $"Se compro {quantity} unidad del producto {name}",
             Data = product
         };  
     }
