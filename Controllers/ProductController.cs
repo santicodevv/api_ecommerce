@@ -52,7 +52,7 @@ namespace ApiEcommerce.Controllers
             return CreatedAtAction("GetProductById", new { Id = result.Id }, result);
         }
 
-        [HttpPost("buy")]
+        [HttpGet("buy")]
         public async Task<ActionResult> BuyProductAsync(string name, int quantity)
         {
             var saved = await _services.BuyProductAsync(name, quantity);
