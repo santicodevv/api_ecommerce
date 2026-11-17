@@ -20,9 +20,25 @@ public class UserServices : IUserServices
 
     }
 
-    public Task<User?> GetUserAsync(int id)
+    public async Task<ServiceResult<User?>> GetUserAsync(int id)
     {
-        throw new NotImplementedException();
+        var user = await _users.GetUserAsync(id);
+
+        if (user is null)
+        {
+            return new ServiceResult<User?>
+            {
+                Success = false,
+                Message = $"El usuario {id} no fue encontrado"
+            };
+        }
+
+        return new ServiceResult<User?>
+        {
+            Success = true,
+            Message = $"El usuario {user.Name} fue encontrado exitosamente",
+            Data = user
+        };
     }
 
     public async Task<List<User>> GetUsersAsync(PaginationParams pagination)
@@ -106,8 +122,50 @@ public class UserServices : IUserServices
 
     }
 
-    public Task<User> Register(CreateUserDto userLoginDto)
+    public async Task<ServiceResult<User>> Register(CreateUserDto createUserDto)
     {
-        throw new NotImplementedException();
+        if (createUserDto == null)
+        {
+            return new ServiceResult<User>
+            {
+                Success = false,
+                Message = "Datos invalidos"
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(createUserDto.Username))
+        {
+            return new ServiceResult<User>
+            {
+                Success = false,
+                Message = "Username es requerido"
+            };
+        }
+
+        if (await _users.IsUniqueUser(createUserDto.Username))
+        {
+            return new ServiceResult<User>
+            {
+                Success = false,
+                Message = "El usuario ya existe"
+            };
+        }
+
+        var result = await _users.Register(createUserDto);
+        if (result is null)
+        {
+            return new ServiceResult<User>
+            {
+                Success = false,
+                Message = "Error al registrar el usuario"
+            };
+        }
+
+        return new ServiceResult<User>
+        {
+            Success = true,
+            Message = "Usuario registrado exitosamente",
+            Data = result
+        };
     }
 }

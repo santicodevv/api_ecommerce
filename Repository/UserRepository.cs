@@ -36,7 +36,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User> Login(UserLoginDto userLoginDto)
     {
-        var user = await _db.Users.FirstOrDefaultAsync<User>(user => user.Name.ToLower().Trim() == userLoginDto.Username.ToLower().Trim());
+        var user = await _db.Users.FirstOrDefaultAsync(user => user.Username.ToLower().Trim() == userLoginDto.Username.ToLower().Trim());
 
         return user!;
     }

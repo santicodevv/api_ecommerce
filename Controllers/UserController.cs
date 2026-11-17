@@ -29,7 +29,51 @@ namespace ApiEcommerce.Controllers
                 return BadRequest( new { message = "No hay usuarios registrado"} );
             }
 
-            return Ok( new { data = result });
+            var users = _mapper.Map<List<UserDto>>(result);
+
+            return Ok( new { data = users });
+        }
+
+        [HttpGet("{id:int}", Name = "GetUser")]
+        public async Task<ActionResult<List<User>>> GetUserAsync(int id)
+        {
+            var result = await _user.GetUserAsync(id);
+
+            if (!result.Success)
+            {
+                return BadRequest( new { message = result.Message } );
+            }
+
+            return Ok( new { message = result.Message, data = _mapper.Map<UserDto>(result) });
+        }
+
+        [HttpPost(Name = "RegisterUser")]
+        public async Task<ActionResult> RegisterUserAsync([FromBody] CreateUserDto createUserDto)
+        {
+            var result = await _user.Register(createUserDto);
+
+            if (!result.Success)
+            {
+                return BadRequest( new { message = result.Message });
+            }
+
+            var userDto = _mapper.Map<UserDto>(result.Data);
+
+            return CreatedAtAction("GetUser", new { Id = userDto.Id }, userDto );
+        }
+
+
+        [HttpPost("login", Name = "LoginUser")]
+        public async Task<ActionResult> LoginUserAsync([FromBody] UserLoginDto userLoginDto)
+        {
+            var user = await _user.Login(userLoginDto);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(user);
         }
     }
 }
