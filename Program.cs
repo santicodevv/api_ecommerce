@@ -14,6 +14,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddAutoMapper( cg => {}, typeof(CategoryProfile) );
 builder.Services.AddAutoMapper( cg => {}, typeof(ProductProfile) );
 builder.Services.AddAutoMapper( cg => {}, typeof(UserProfile) );

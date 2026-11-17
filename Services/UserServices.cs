@@ -25,9 +25,9 @@ public class UserServices : IUserServices
         throw new NotImplementedException();
     }
 
-    public Task<List<User>> GetUsersAsync()
+    public async Task<List<User>> GetUsersAsync(PaginationParams pagination)
     {
-        throw new NotImplementedException();
+        return await _users.GetUsersAsync(pagination.Page, pagination.PageSize);
     }
 
     public Task<bool> IsUniqueUser(string username)
